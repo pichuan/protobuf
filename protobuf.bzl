@@ -1,4 +1,4 @@
-load("@bazel_skylib//:lib.bzl", "versions")
+# load("@bazel_skylib//:lib.bzl", "versions")
 
 def _GetPath(ctx, path):
   if ctx.label.workspace_root:
@@ -413,4 +413,5 @@ def check_protobuf_required_bazel_version():
   This ensures bazel supports our approach to proto_library() depending on a
   copied filegroup. (Fixed in bazel 0.5.4)
   """
-  versions.check(minimum_bazel_version = "0.5.4")
+  pass
+  # versions.check(minimum_bazel_version = "0.5.4")
