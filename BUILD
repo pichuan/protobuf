@@ -4,6 +4,18 @@ licenses(["notice"])
 
 exports_files(["LICENSE"])
 
+# Original external
+# _PYTHON_HEADERS = "//external:python_headers"
+# _PYTHON_SIX = "//external:six"
+
+# Non-external version
+_PYTHON_HEADERS = "@local_config_python//:python_headers"
+_PYTHON_SIX = "@six_archive//:six"
+_PYTHON_CPP_LIBRARY_NAME = "python/google/protobuf/pyext/_message.so"
+# _PYTHON_CPP_LIBRARY_NAME = "com_google_protobuf/python/google/protobuf/pyext/_message.so"
+
+
+
 ################################################################################
 # Java 9 configuration
 ################################################################################
@@ -115,6 +127,7 @@ cc_library(
     copts = COPTS,
     includes = ["src/"],
     linkopts = LINK_OPTS,
+    alwayslink = 1,
     visibility = ["//visibility:public"],
 )
 
@@ -665,16 +678,16 @@ cc_binary(
     copts = COPTS + [
         "-DPYTHON_PROTO2_CPP_IMPL_V2",
     ],
-    linkshared = 1,
-    linkstatic = 1,
+    linkshared = True,
+    linkstatic = False,
     deps = select({
         "//conditions:default": [],
-        ":use_fast_cpp_protos": ["//external:python_headers"],
+        ":use_fast_cpp_protos": [_PYTHON_HEADERS],
     }),
 )
 
 cc_binary(
-    name = "python/google/protobuf/pyext/_message.so",
+    name = _PYTHON_CPP_LIBRARY_NAME,
     srcs = glob([
         "python/google/protobuf/pyext/*.cc",
         "python/google/protobuf/pyext/*.h",
@@ -689,14 +702,15 @@ cc_binary(
         "python/",
         "src/",
     ],
-    linkshared = 1,
-    linkstatic = 1,
+    linkshared = True,
+    linkstatic = False,
+    linkopts = ["-Wl,-rpath=/home/mdepristo/prototest/bazel-bin/py_cpp_proto/run_benchmark.runfiles/prototest/_solib_k8/"],
     deps = [
         ":protobuf",
         ":proto_api",
     ] + select({
         "//conditions:default": [],
-        ":use_fast_cpp_protos": ["//external:python_headers"],
+        ":use_fast_cpp_protos": [_PYTHON_HEADERS],
     }),
 )
 
@@ -730,27 +744,102 @@ internal_copied_filegroup(
 # which case we can simply add :protos_python in srcs.
 COPIED_WELL_KNOWN_PROTOS = ["python/" + s for s in RELATIVE_WELL_KNOWN_PROTOS]
 
-py_proto_library(
+# --------------------------------------------------
+# --------------------------------------------------
+# --------------------------------------------------
+# --------------------------------------------------
+# --------------------------------------------------
+
+
+# TODO(mdepristo): why is this?
+py_library(
     name = "protobuf_python",
-    srcs = COPIED_WELL_KNOWN_PROTOS,
-    include = "python",
+    srcs = glob(["python/**/__init__.py"]), # + WELL_KNOWN_PROTOS,
+    # include = "python",
     data = select({
         "//conditions:default": [],
         ":use_fast_cpp_protos": [
             ":python/google/protobuf/internal/_api_implementation.so",
-            ":python/google/protobuf/pyext/_message.so",
+            ":" + _PYTHON_CPP_LIBRARY_NAME,
         ],
     }),
-    default_runtime = "",
-    protoc = ":protoc",
-    py_libs = [
+    deps = [
         ":python_srcs",
-        "//external:six",
+	_PYTHON_SIX,
     ],
-    py_extra_srcs = glob(["python/**/__init__.py"]),
     srcs_version = "PY2AND3",
     visibility = ["//visibility:public"],
 )
+
+# py_proto_library(
+#     name = "protobuf_python",
+#     srcs = COPIED_WELL_KNOWN_PROTOS,
+#     include = "python",
+#     data = select({
+#         "//conditions:default": [],
+#         ":use_fast_cpp_protos": [
+#             ":python/google/protobuf/internal/_api_implementation.so",
+#             ":python/google/protobuf/pyext/_message.so",
+#         ],
+#     }),
+#     default_runtime = "",
+#     protoc = ":protoc",
+#     py_libs = [
+#         ":python_srcs",
+# 	_PYTHON_SIX,
+#     ],
+#     py_extra_srcs = glob(["python/**/__init__.py"]),
+#     srcs_version = "PY2AND3",
+#     visibility = ["//visibility:public"],
+# )
+
+
+# cc_binary(
+#     name = "python/google/protobuf/internal/_api_implementation.so",
+#     srcs = ["python/google/protobuf/internal/api_implementation.cc"],
+#     copts = COPTS + [
+#         "-DPYTHON_PROTO2_CPP_IMPL_V2",
+#     ],
+#     linkshared = 1,
+#     linkstatic = 1,
+#     deps = select({
+#         "//conditions:default": [],
+#         ":use_fast_cpp_protos": [_PYTHON_HEADERS],
+#     }),
+# )
+
+# cc_binary(
+#     name = _PYTHON_CPP_LIBRARY_NAME,
+#     srcs = glob([
+#         "python/google/protobuf/pyext/*.cc",
+#         "python/google/protobuf/pyext/*.h",
+#     ]),
+#     copts = COPTS + [
+#         "-DGOOGLE_PROTOBUF_HAS_ONEOF=1",
+#     ] + select({
+#         "//conditions:default": [],
+#         ":allow_oversize_protos": ["-DPROTOBUF_PYTHON_ALLOW_OVERSIZE_PROTOS=1"],
+#     }),
+#     includes = [
+#         "python/",
+#         "src/",
+#     ],
+#     linkshared = 1,
+#     linkstatic = 1,
+#     deps = [
+#         ":protobuf",
+#         ":proto_api",
+#     ] + select({
+#         "//conditions:default": [],
+#         ":use_fast_cpp_protos": [_PYTHON_HEADERS],
+#     }),
+# )
+
+# --------------------------------------------------
+# --------------------------------------------------
+# --------------------------------------------------
+
+
 
 # Copy the test proto files from src/google/protobuf to
 # python/google/protobuf. This way, the generated Python sources will be in the
@@ -840,7 +929,7 @@ cc_library(
     name = "proto_api",
     hdrs = ["python/google/protobuf/proto_api.h"],
     deps = [
-        "//external:python_headers",
+        _PYTHON_HEADERS,
     ],
     visibility = ["//visibility:public"],
 )
