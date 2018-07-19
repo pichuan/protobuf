@@ -421,6 +421,7 @@ static PyObject* AddDescriptor(PyObject* self, PyObject* descriptor) {
   if (!message_descriptor) {
     return NULL;
   }
+  std::cout << "AddDescriptor " << message_descriptor->full_name() << std::endl;
   if (message_descriptor !=
       reinterpret_cast<PyDescriptorPool*>(self)->pool->FindMessageTypeByName(
           message_descriptor->full_name())) {

@@ -1054,4 +1054,5 @@ else:
 
 
 def Default():
+  print('Descriptor_pool ', _DEFAULT)
   return _DEFAULT

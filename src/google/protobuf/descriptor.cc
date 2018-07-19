@@ -1279,7 +1279,9 @@ DescriptorPool::DescriptorPool()
     lazily_build_dependencies_(false),
     allow_unknown_(false),
     enforce_weak_(false),
-    disallow_enforce_utf8_(false) {}
+    disallow_enforce_utf8_(false) {
+  GOOGLE_LOG(INFO) << "DescriptorPool::DescriptorPool()";
+}
 
 DescriptorPool::DescriptorPool(DescriptorDatabase* fallback_database,
                                ErrorCollector* error_collector)
@@ -1293,6 +1295,7 @@ DescriptorPool::DescriptorPool(DescriptorDatabase* fallback_database,
     allow_unknown_(false),
     enforce_weak_(false),
     disallow_enforce_utf8_(false) {
+  GOOGLE_LOG(INFO) << "DescriptorPool::DescriptorPool(fallback_db, error_collector)";
 }
 
 DescriptorPool::DescriptorPool(const DescriptorPool* underlay)
@@ -1305,7 +1308,9 @@ DescriptorPool::DescriptorPool(const DescriptorPool* underlay)
     lazily_build_dependencies_(false),
     allow_unknown_(false),
     enforce_weak_(false),
-    disallow_enforce_utf8_(false) {}
+    disallow_enforce_utf8_(false) {
+  GOOGLE_LOG(INFO) << "DescriptorPool::DescriptorPool(underlay = " << (void*)underlay << ")";
+}
 
 DescriptorPool::~DescriptorPool() {
   if (mutex_ != NULL) delete mutex_;
@@ -1398,6 +1403,8 @@ void DescriptorPool::InternalAddGeneratedFile(
   // any descriptor-based operations, since this might cause infinite recursion
   // or deadlock.
   InitGeneratedPoolOnce();
+  string fd((char*)encoded_file_descriptor, size);
+  GOOGLE_LOG(INFO) << "DescriptorPool::InternalAddGeneratedFile(" << fd.substr(0, 30) << ", " << size << ") generated_pool is " << (void*)DescriptorPool::generated_pool();
   GOOGLE_CHECK(generated_database_->Add(encoded_file_descriptor, size));
 }
 
@@ -4004,6 +4011,7 @@ FileDescriptor* DescriptorPool::NewPlaceholderFileWithMutexHeld(
 
   placeholder->name_ = tables_->AllocateString(name);
   placeholder->package_ = &internal::GetEmptyString();
+  GOOGLE_LOG(INFO) << "******** NewPlaceholderFileWithMutexHeld";
   placeholder->pool_ = this;
   placeholder->options_ = &FileOptions::default_instance();
   placeholder->tables_ = &FileDescriptorTables::GetEmptyInstance();
@@ -4334,6 +4342,7 @@ FileDescriptor* DescriptorBuilder::BuildFileImpl(
     // initialized.
     result->package_ = tables_->AllocateString("");
   }
+  GOOGLE_LOG(INFO) << "*************** BuildFileImpl: setting pool_ to " << (void*)pool_;
   result->pool_ = pool_;
 
   // Add to tables.

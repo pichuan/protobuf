@@ -645,11 +645,23 @@ const Message* DynamicMessageFactory::GetPrototype(const Descriptor* type) {
 
 const Message* DynamicMessageFactory::GetPrototypeNoLock(
     const Descriptor* type) {
+  GOOGLE_LOG(INFO) << "delegate_to_generated_factory_ " << delegate_to_generated_factory_;
+  if (delegate_to_generated_factory_) {
+    // GOOGLE_LOG(INFO) << "type = " << type->DebugString();
+    GOOGLE_LOG(INFO) << "type->file() = " << type->file()->DebugString();
+    GOOGLE_LOG(INFO) << "type->file()->pool() = " << (void*)type->file()->pool();
+    GOOGLE_LOG(INFO) << "DescriptorPool::generated_pool() = " << (void*)DescriptorPool::generated_pool();
+  }
+  
   if (delegate_to_generated_factory_ &&
       type->file()->pool() == DescriptorPool::generated_pool()) {
+      // (type->file()->pool() == DescriptorPool::generated_pool() ||
+      //  type->file()->pool()->underlay() == DescriptorPool::generated_pool())) {
+    GOOGLE_LOG(INFO) << "Using generated factory";
     return MessageFactory::generated_factory()->GetPrototype(type);
   }
 
+  GOOGLE_LOG(INFO) << "Using dynamic message...";
   const DynamicMessage::TypeInfo** target = &prototypes_->map_[type];
   if (*target != NULL) {
     // Already exists.

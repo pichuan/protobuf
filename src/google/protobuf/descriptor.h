@@ -1534,6 +1534,7 @@ class LIBPROTOBUF_EXPORT DescriptorPool {
   // this pool.  Do not add your own descriptors to this pool.
   static const DescriptorPool* generated_pool();
 
+  const DescriptorPool* underlay() const { return underlay_; }
 
   // Find a FileDescriptor in the pool by file name.  Returns NULL if not
   // found.

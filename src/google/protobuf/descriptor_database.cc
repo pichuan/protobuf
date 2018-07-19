@@ -313,6 +313,8 @@ bool EncodedDescriptorDatabase::Add(
     const void* encoded_file_descriptor, int size) {
   FileDescriptorProto file;
   if (file.ParseFromArray(encoded_file_descriptor, size)) {
+    GOOGLE_LOG(INFO) << "*** EncodedDescriptorDatabase::Add " << size;
+    // GOOGLE_LOG(INFO) << "  file " << file.ShortDebugString();
     return index_.AddFile(file, std::make_pair(encoded_file_descriptor, size));
   } else {
     GOOGLE_LOG(ERROR) << "Invalid file descriptor data passed to "

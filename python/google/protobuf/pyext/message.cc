@@ -209,6 +209,7 @@ static PyObject* New(PyTypeObject* type,
   PyObject *bases, *dict;
   const char* name;
 
+  std::cout << "Message::New" << std::endl;
   // Check arguments: (name, bases, dict)
   if (!PyArg_ParseTupleAndKeywords(args, kwargs, "sO!O!:type", kwlist,
                                    &name,

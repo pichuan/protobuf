@@ -53,6 +53,7 @@ namespace python {
 namespace message_factory {
 
 PyMessageFactory* NewMessageFactory(PyTypeObject* type, PyDescriptorPool* pool) {
+  std::cout << "NewMessageFactory " << std::endl;
   PyMessageFactory* factory = reinterpret_cast<PyMessageFactory*>(
       PyType_GenericAlloc(type, 0));
   if (factory == NULL) {
@@ -120,6 +121,7 @@ static void Dealloc(PyObject* pself) {
 int RegisterMessageClass(PyMessageFactory* self,
                          const Descriptor* message_descriptor,
                          CMessageClass* message_class) {
+  std::cout << "RegisterMessageClass " << message_descriptor << std::endl;
   Py_INCREF(message_class);
   typedef PyMessageFactory::ClassesByMessageMap::iterator iterator;
   std::pair<iterator, bool> ret = self->classes_by_descriptor->insert(
@@ -135,6 +137,7 @@ int RegisterMessageClass(PyMessageFactory* self,
 CMessageClass* GetOrCreateMessageClass(PyMessageFactory* self,
                                        const Descriptor* descriptor) {
   // This is the same implementation as MessageFactory.GetPrototype().
+  std::cout << "GetOrCreateMessageClass " << std::endl;
 
   // Do not create a MessageClass that already exists.
   hash_map<const Descriptor*, CMessageClass*>::iterator it =
@@ -202,6 +205,7 @@ CMessageClass* GetOrCreateMessageClass(PyMessageFactory* self,
 // Retrieve the message class added to our database.
 CMessageClass* GetMessageClass(PyMessageFactory* self,
                                const Descriptor* message_descriptor) {
+  std::cout << "GetMessageClass " << std::endl;
   typedef PyMessageFactory::ClassesByMessageMap::iterator iterator;
   iterator ret = self->classes_by_descriptor->find(message_descriptor);
   if (ret == self->classes_by_descriptor->end()) {

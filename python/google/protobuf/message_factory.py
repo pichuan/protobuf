@@ -39,6 +39,8 @@ my_proto_instance = message_classes['some.proto.package.MessageName']()
 
 __author__ = 'matthewtoia@google.com (Matt Toia)'
 
+import logging
+
 from google.protobuf import descriptor_pool
 from google.protobuf import message
 from google.protobuf import reflection
@@ -66,6 +68,7 @@ class MessageFactory(object):
     Returns:
       A class describing the passed in descriptor.
     """
+    print('*** message_factory.py:GetPrototype')
     if descriptor not in self._classes:
       descriptor_name = descriptor.name
       if str is bytes:  # PY2
@@ -100,6 +103,7 @@ class MessageFactory(object):
       any dependent messages as well as any messages defined in the same file as
       a specified message.
     """
+    print('Calling GetMessages {}'.format(files))
     result = {}
     for file_name in files:
       file_desc = self.pool.FindFileByName(file_name)

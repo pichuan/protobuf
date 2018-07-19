@@ -76,7 +76,7 @@ class SymbolDatabase(message_factory.MessageFactory):
     Returns:
       The provided message.
     """
-
+    print('*** RegisterMessage', message.DESCRIPTOR)
     desc = message.DESCRIPTOR
     self._classes[desc] = message
     self.RegisterMessageDescriptor(desc)
@@ -88,6 +88,8 @@ class SymbolDatabase(message_factory.MessageFactory):
     Args:
       message_descriptor: a descriptor.MessageDescriptor.
     """
+    print('symbol_db.RegisterMessageDescriptor: ', message_descriptor)
+    print('symbol_db.RegisterMessageDescriptor: ', self.pool)
     self.pool.AddDescriptor(message_descriptor)
 
   def RegisterEnumDescriptor(self, enum_descriptor):
@@ -139,7 +141,7 @@ class SymbolDatabase(message_factory.MessageFactory):
     Raises:
       KeyError: if the symbol could not be found.
     """
-
+    print('GetSymbol', symbol, self._classes[self.pool.FindMessageTypeByName(symbol)])
     return self._classes[self.pool.FindMessageTypeByName(symbol)]
 
   def GetMessages(self, files):
@@ -160,6 +162,7 @@ class SymbolDatabase(message_factory.MessageFactory):
     Raises:
       KeyError: if a file could not be found.
     """
+    print('GetMessages ', files)
 
     def _GetAllMessages(desc):
       """Walk a message Descriptor and recursively yields all message names."""
@@ -186,4 +189,5 @@ _DEFAULT = SymbolDatabase(pool=descriptor_pool.Default())
 
 def Default():
   """Returns the default SymbolDatabase."""
+  print('symbol_database.py: Default() returns ', _DEFAULT)
   return _DEFAULT
