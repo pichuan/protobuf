@@ -704,7 +704,7 @@ cc_binary(
     ],
     linkshared = True,
     linkstatic = False,
-    linkopts = ["-Wl,-rpath=/usr/local/google/home/thomaswc/nucleus/bazel-bin/py_cpp_proto/run_benchmark.runfiles/prototest/_solib_k8/"],
+    linkopts = ["-Wl,-rpath=/usr/local/google/home/thomaswc/nucleus2/bazel-bin/nucleus/util/python/proto_ptr_examples_wrap_test.runfiles/nucleus/_solib_k8/"],
     deps = [
         ":protobuf",
         ":proto_api",
