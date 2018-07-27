@@ -705,7 +705,7 @@ cc_binary(
     linkshared = True,
     linkstatic = False,
     # linkopts = ["-Wl,-rpath=/usr/local/google/home/thomaswc/nucleus2/bazel-bin/nucleus/util/python/proto_ptr_examples_wrap_test.runfiles/nucleus/_solib_k8/"],	
-    linkopts = ["-Wl,-rpath=/home/thomaswc/dv/bazel-bin/deepvariant/make_examples.runfiles/com_google_deepvariant/_solib_k8/"],
+    linkopts = ["-Wl,-rpath=/home/pichuan/dv/bazel-bin/deepvariant/make_examples.runfiles/com_google_deepvariant/_solib_k8/"],
     deps = [
         ":protobuf",
         ":proto_api",
